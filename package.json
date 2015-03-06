@@ -48,9 +48,6 @@
     "underscore": "latest",
     "mkdirp": "latest",
     "debug": "latest",
-    "MD5": "latest",
-    "walk": "latest",
-    "chai": "latest",
     "mocha": "latest",
     "should": "latest"
   },

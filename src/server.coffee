@@ -17,14 +17,20 @@ pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json")))
 ## 更新外部配置
 p.version(pkg.version)
   .option('-e, --environment [type]', 'runtime environment of [development, production, testing]', 'development')
+  .option('-p, --port [value]', 'runtime port ', '7789')
   .parse(process.argv)
+
+console.dir p
 
 ###
 # bootstrap config
 ###
 env = p.environment || 'development'
-port = process.env.PORT || 7789
+port = p.port || 7789
+c = require('./config/config')
+console.dir c
 config = require('./config/config')[env]
+console.dir config
 config.port = port
 config.version = pkg.version
 config.root = path.resolve __dirname, "../"
