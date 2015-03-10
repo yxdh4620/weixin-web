@@ -2,13 +2,15 @@
 wx.ready(function() {
   var shareData;
   shareData = {
-    title: '微信JS-SDK Demo',
-    desc: '微信JS-SDK,帮助第三方为用户提供更优质的移动web服务',
-    link: 'http://demo.open.weixin.qq.com/jssdk/',
-    imgUrl: 'http://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRt8Qia4lv7k3M9J1SKqKCImxJCt7j9rHYicKDI45jRPBxdzdyREWnk0ia0N5TMnMfth7SdxtzMvVgXg/0'
+    title: 'Gama 游戏·',
+    desc: '为 Gama Labs， Gama 引擎， Gama SDK 的客户提供快捷方便的客户服务。',
+    link: 'http://weixin.gamagama.cn',
+    imgUrl: 'https://mp.weixin.qq.com/misc/getheadimg?token=1540123482&fakeid=3076364027&r=613427'
   };
   wx.onMenuShareAppMessage(shareData);
-  return wx.onMenuShareTimeline(shareData);
+  wx.onMenuShareTimeline(shareData);
+  wx.onMenuShareQQ(shareData);
+  return wx.onMenuShareWeibo(shareData);
 });
 
 wx.error(function(res) {
