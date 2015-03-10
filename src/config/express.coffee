@@ -50,4 +50,3 @@ module.exports = (app, config) ->
   app.locals.APP_NAME = config.app.name
   app.locals.TIMESTAMP = Date.now().toString(36)
 
-

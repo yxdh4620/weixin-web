@@ -10,6 +10,7 @@ path = require "path"
 p = require 'commander'
 express = require "express"
 _ = require 'underscore'
+WeixinTools = require("weixin-tools")
 debuglog = require("debug")("weixin-web::server")
 
 pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json")))
@@ -20,7 +21,6 @@ p.version(pkg.version)
   .option('-p, --port [value]', 'runtime port ', '7789')
   .parse(process.argv)
 
-console.dir p
 
 ###
 # bootstrap config
@@ -28,35 +28,35 @@ console.dir p
 env = p.environment || 'development'
 port = p.port || 7789
 c = require('./config/config')
-console.dir c
 config = require('./config/config')[env]
-console.dir config
 config.port = port
 config.version = pkg.version
 config.root = path.resolve __dirname, "../"
 
 
-###
-# express settings
-###
-app = express()
-require("./config/express")(app, config)
+start=(config)->
+  require('./utils/redis_db').init config,()->
+    options = config.weixin || {}
+    wxt = new WeixinTools(options.appid, options.secret, options.jsapiList, true)
+    require("./utils/weixin_util").init(wxt)
+    ###
+    # express settings
+    ###
+    app = express()
+    require("./config/express")(app, config)
+    ###
+    # bootstrap routes
+    ###
+    require("./config/routes")(app, wxt, config)
+    #unless env is 'development'
+    #  process.on 'uncaughtException', (error) -> mailer.deliverServerException(error)
 
-###
-# bootstrap routes
-###
-require("./config/routes")(app)
+    ###
+    # start the app by listening on port
+    ###
+    app.listen port
+    console.log "weixin-web web started on port:#{port}, env:#{env}"
 
-
-unless env is 'development'
-  process.on 'uncaughtException', (error) -> mailer.deliverServerException(error)
-
-###
-# start the app by listening on port
-###
-app.listen port
-console.log "weixin-web web started on port:#{port}, env:#{env}"
-
-exports = module.exports = app
+start(config)
 
 
