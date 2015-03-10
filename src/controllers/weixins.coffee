@@ -1,6 +1,6 @@
 debuglog = require("debug")("weixin-web:controller:weixins")
 {redis} = require '../utils/redis_db'
-#WeixinTools = require("weixin-tools")
+httpUtil = require "../utils/http_utils"
 weixinUtil = require('../utils/weixin_util')
 
 AUTHORIXZE_URL = null
@@ -18,6 +18,13 @@ _loadAccessToken = (callback) ->
 
 _loadUserInfo = (openid, callback) ->
   redis.hgetall "weixin_userinfo::#{openid}", callback
+
+_redirectIndex = (res, userinfo) ->
+  timestamp = httpUtil.generateTimestamp()
+  userinfo.timestamp = timestamp
+  userinfoStr = httpUtil.xxteaEncryptObj(userinfo)
+  res.redirect "/index?timestamp=#{timestamp}&u=#{userinfoStr}"
+
 
 exports.init = (weixinTools, options) ->
   console.log "weixins init."
@@ -44,7 +51,7 @@ exports.login = (req, res, next) ->
         return _sendError res, new Error("not find userinfo") unless userinfo
         redis.hmset "weixin_userinfo::#{authorizeToken.openid}", userinfo, (err) ->
           req.session.userinfo = userinfo
-          res.redirect "/index"
+          _redirectIndex res, userinfo
           return
         return
       return
@@ -52,19 +59,20 @@ exports.login = (req, res, next) ->
     _loadUserInfo authorizeToken.openid, (err, userinfo) ->
       if not err? and userinfo?
         req.session.userinfo = userinfo
-        res.redirect "/index"
+        _redirectIndex res, userinfo
         return
       authorizeUrl = wxt.generateAuthorizeURL(AUTHORIXZE_URL, "", 'snsapi_userinfo')
       res.redirect authorizeUrl
 
 exports.index = (req, res, next) ->
-  userinfo = req.session.userinfo || {}
   url = "http://#{domainName}#{req.originalUrl}"
+  userStr = req.query.u||""
+  console.log "userStr:  #{userStr}"
   weixinUtil.generateConfig url, (err, config) ->
     return _sendError res, err if err?
     res.render "index2",
       config: config
-      userinfo: userinfo || {}
+      userStr: userStr
     return
   return
 

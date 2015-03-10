@@ -37,8 +37,10 @@ config.root = path.resolve __dirname, "../"
 start=(config)->
   require('./utils/redis_db').init config,()->
     options = config.weixin || {}
-    wxt = new WeixinTools(options.appid, options.secret, options.jsapiList, true)
+    wxt = new WeixinTools(options.appid, options.secret, options.jsapiList)
+    require("./utils/http_utils").init(config)
     require("./utils/weixin_util").init(wxt)
+
     ###
     # express settings
     ###

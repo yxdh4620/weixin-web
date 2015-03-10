@@ -50,6 +50,7 @@
     "debug": "latest",
     "request": "2.27.0",
     "weixin-tools": "latest",
+    "xxtea": "^0.1.0",
     "mocha": "latest",
     "should": "latest"
   },

@@ -79,7 +79,6 @@ generateConfig = (url, callback) ->
   getJsapiTicket (err, jsapi_ticket) ->
     return callback err if err?
     config = WXT.generateConfig url, jsapi_ticket
-    config.debug = true
     callback null, config
 
 module.exports =
